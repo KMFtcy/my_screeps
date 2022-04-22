@@ -26,7 +26,7 @@ var roleBuilder = {
 		}
 		else {
 			var sources = creep.room.find(FIND_SOURCES);
-			if (creep.getFreeCapacity() == 0) {
+			if (creep.store.getFreeCapacity() == 0) {
 				creep.moveTo(STRUCTURE_SPAWN)
 			} else {
 				if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
