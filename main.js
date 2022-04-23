@@ -7,7 +7,7 @@ var roleBuilder = require('role.builder');
 module.exports.loop = function () {
     // report room info
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    var transfers = _.filter(Game.creeps, (creep) => creep.memory.role == 'tranfer');
+    var transfers = _.filter(Game.creeps, (creep) => creep.memory.role == 'transfer');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     console.log('Harvesters: ' + harvesters.length 
@@ -30,10 +30,10 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
             { memory: { role: 'harvester' } });
     } else if (transfers.length < params['TRANSFER_NUM']) {
-        var newName = 'Tranfer' + Game.time;
+        var newName = 'Transfer' + Game.time;
         console.log('Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
-            { memory: { role: 'tranfer' } });
+            { memory: { role: 'transfer' } });
     } else if (upgraders.length < params['UPGRADER_NUM']) {
         var newName = 'Upgrader' + Game.time;
         console.log('Spawning new upgrader: ' + newName);
