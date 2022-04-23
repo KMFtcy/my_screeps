@@ -35,20 +35,18 @@ module.exports.loop = function () {
 
     }
 
+    // auto create spawns
     if (harvesters.length < params['HARVESTER_NUM']) {
-        // auto create harvester
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
             { memory: { role: 'harvester' } });
     } else if (upgraders.length < params['UPGRADER_NUM']) {
-        // auto create upgrader
         var newName = 'Upgrader' + Game.time;
         console.log('Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
             { memory: { role: 'upgrader' } });
     } else if (builders.length < params['BUILDER_NUM']) {
-        // auto create builder
         var newName = 'Builder' + Game.time;
         console.log('Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], newName,
