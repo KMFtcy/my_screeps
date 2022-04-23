@@ -1,18 +1,35 @@
-var roleHarvester = {
+
+var roleHarvester = require('role.harvester');
+
+var roleTranfer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        // find containers
         if (creep.store.getFreeCapacity() > 0) {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES)
-            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+            // find a filled container, if there is no container, be a harvester
+            var targets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (
+                        structure.structureType == STRUCTURE_CONTAINER
+                    ) &&
+                        structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+                }
+            });
+            if (targets.length > 0) {
+                if (creep.withdraw(targets[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+                }
+            } else {
+                roleHarvester.run(creep) // be a harvester
             }
         } else {
+            // transfer to a needed structure
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
                         structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_CONTAINER
+                        structure.structureType == STRUCTURE_EXTENSION
                     ) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
@@ -26,8 +43,9 @@ var roleHarvester = {
                 var spawns_target = creep.room.find(FIND_MY_SPAWNS)
                 creep.moveTo(spawns_target[0])
             }
+
         }
     }
 };
 
-module.exports = roleHarvester;
+module.exports = roleTranfer;
