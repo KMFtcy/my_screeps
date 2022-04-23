@@ -17,25 +17,7 @@ module.exports.loop = function () {
             console.log('Clearing non-existing creep memory:', name);
         }
     }
-
-    // towers action defined
-    var tower = Game.getObjectById('0ee4182e8b07c0974928c086');
-    if (tower) {
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
-            tower.attack(closestHostile);
-        }
-
-        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
-        });
-        if (closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
-        }
-
-    }
-
-    // auto create spawns
+    // auto create screeps
     if (harvesters.length < params['HARVESTER_NUM']) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
@@ -66,4 +48,23 @@ module.exports.loop = function () {
             roleBuilder.run(creep);
         }
     }
+
+
+    // towers action defined
+    var tower = Game.getObjectById('0ee4182e8b07c0974928c086');
+    if (tower) {
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (closestHostile) {
+            tower.attack(closestHostile);
+        }
+
+        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (structure) => structure.hits < structure.hitsMax
+        });
+        if (closestDamagedStructure) {
+            tower.repair(closestDamagedStructure);
+        }
+
+    }
+
 }
