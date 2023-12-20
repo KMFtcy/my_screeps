@@ -3,15 +3,14 @@ import { } from 'game/prototypes';
 import { prototypes, utils, constants} from 'game';
 import { ATTACK, CARRY, MOVE, WORK } from 'game/constants';
 import { getObjectsByPrototype } from 'game/utils';
-import { StructureSpawn, Source } from 'game/prototypes';
+import { StructureSpawn, Source, StructureContainer } from 'game/prototypes';
 
-var miner;
-var medics = [];
+let miner;
 
 export function loop() {
     // scan context
-    var mySpawn = getObjectsByPrototype(StructureSpawn)[0];
-    var source = getObjectsByPrototype(Source)[0];
+    var mySpawn = getObjectsByPrototype(StructureSpawn).find(i => i.my);
+    var source = getObjectsByPrototype(StructureContainer)[0];
     var enemyCreeps = getObjectsByPrototype(prototypes.Creep).filter(creep => !creep.my);
     var warriors = getObjectsByPrototype(prototypes.Creep).filter(creep => creep.my && creep.body.some(body => body.type == ATTACK));
 
@@ -21,30 +20,44 @@ export function loop() {
 
     // spawn screeps
     if (!miner) {
-        miner = mySpawn.spawnCreep([MOVE, MOVE, WORK, CARRY]).object;
+        console.log("spawning miner")
+        miner = mySpawn.spawnCreep([MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]).object;
     }else{
-        if (warriors.length <= 4) {
-            mySpawn.spawnCreep([MOVE, ATTACK]);
-        }
+        console.log("spawning worrior")
+        mySpawn.spawnCreep([MOVE, MOVE, ATTACK, ATTACK]);
     }
 
     // mining
-    console.log(miner.store)
-    if(miner.store.getFreeCapacity(constants.RESOURCE_ENERGY)) {
-        if(miner.harvest(source) == constants.ERR_NOT_IN_RANGE) {
-            miner.moveTo(source);
-        }
-    } else {
-        if(miner.transfer(mySpawn, constants.RESOURCE_ENERGY) == constants.ERR_NOT_IN_RANGE) {
-            miner.moveTo(mySpawn);
+    if ( miner ){
+        if(!miner.store[constants.RESOURCE_ENERGY]) {
+            const container = utils.findClosestByPath(miner, utils.getObjectsByPrototype(prototypes.StructureContainer).filter(i => i.store[constants.RESOURCE_ENERGY] > 0));
+            if(miner.withdraw(container, constants.RESOURCE_ENERGY) == constants.ERR_NOT_IN_RANGE) {
+                miner.moveTo(container);
+            }
+        } else {
+            console.log("transfering")
+            if(miner.transfer(mySpawn, constants.RESOURCE_ENERGY) == constants.ERR_NOT_IN_RANGE) {
+                miner.moveTo(mySpawn);
+            }
         }
     }
 
-    //defencer
-    if (enemyCreeps.length > 0 && warriors.length > 0){
+    // defencer
+    if (enemyCreeps.length > 0){
         for (var idx in warriors){
-            if(warriors[idx].attack(enemyCreeps[0]) == constants.ERR_NOT_IN_RANGE) {
-                warriors[idx].moveTo(enemyCreeps[0]);
+            let enermy= utils.findClosestByPath(warriors[idx], enemyCreeps);
+            if(warriors[idx].attack(enermy) == constants.ERR_NOT_IN_RANGE) {
+                warriors[idx].moveTo(enermy);
+            }
+        }
+    }
+
+    // attacker
+    if (enemyCreeps.length <= 0){
+        const enemySpawn = getObjectsByPrototype(StructureSpawn).find(i => !i.my);
+        for (var idx in warriors){
+            if(warriors[idx].attack(enemySpawn) == constants.ERR_NOT_IN_RANGE) {
+                warriors[idx].moveTo(enemySpawn);
             }
         }
     }
